@@ -5,63 +5,65 @@ using namespace std;
 // } Driver Code Ends
 
 
+#include <vector>
+#include <queue>
+#include <functional>
+
+using namespace std;
+
 class Solution {
 public:
-    // Function to return the minimum cost to reach the bottom-right cell from the top-left cell.
+    // Comparator for min-heap (priority queue).
+    static bool cmp(const pair<int, pair<int, int>>& p1, const pair<int, pair<int, int>>& p2) {
+        return p1.first > p2.first; // Min-heap based on the cost
+    }
+
     int minimumCostPath(vector<vector<int>>& grid) {
         int n = grid.size();
+        vector<vector<bool>> visited(n, vector<bool>(n, false));
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, decltype(&cmp)> toVisit(&cmp);
         
-        // Priority queue for Dijkstra’s algorithm (min-heap).
-        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> toVisit;
-        
-        // 2D vector to store the minimum cost to reach each cell.
-        vector<vector<int>> minCost(n, vector<int>(n, INT_MAX));
-        
-        // Starting from the top-left corner.
         toVisit.push({grid[0][0], {0, 0}});
-        minCost[0][0] = grid[0][0];
         
-        // Directions for movement: right, down, left, up.
-        vector<pair<int, int>> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-        
+        pair<int, int> ans = {n - 1, n - 1};
+
         while (!toVisit.empty()) {
-            int cost = toVisit.top().first;
+            int val = toVisit.top().first;
             int row = toVisit.top().second.first;
             int col = toVisit.top().second.second;
             toVisit.pop();
             
             // If we've reached the bottom-right corner, return the cost.
-            if (row == n - 1 && col == n - 1) {
-                return cost;
+            if (row == ans.first && col == ans.second) {
+                return val;
             }
             
-            // Skip processing if this cell has already been visited with a lower cost.
-            if (cost > minCost[row][col]) {
+            // Skip processing if this cell has already been visited.
+            if (visited[row][col]) {
                 continue;
             }
+            visited[row][col] = true;
             
             // Explore all possible directions.
-            for (auto dir : directions) {
-                int newRow = row + dir.first;
-                int newCol = col + dir.second;
-                
-                // Check if the new position is within bounds.
-                if (newRow >= 0 && newRow < n && newCol >= 0 && newCol < n) {
-                    int newCost = cost + grid[newRow][newCol];
-                    
-                    // If a cheaper path is found to the new cell, update and push it into the queue.
-                    if (newCost < minCost[newRow][newCol]) {
-                        minCost[newRow][newCol] = newCost;
-                        toVisit.push({newCost, {newRow, newCol}});
-                    }
-                }
+            if (row + 1 < n && !visited[row + 1][col]) {
+                toVisit.push({val + grid[row + 1][col], {row + 1, col}});
+            }
+            if (col + 1 < n && !visited[row][col + 1]) {
+                toVisit.push({val + grid[row][col + 1], {row, col + 1}});
+            }
+            if (row - 1 >= 0 && !visited[row - 1][col]) {
+                toVisit.push({val + grid[row - 1][col], {row - 1, col}});
+            }
+            if (col - 1 >= 0 && !visited[row][col - 1]) {
+                toVisit.push({val + grid[row][col - 1], {row, col - 1}});
             }
         }
         
-        // Return the cost to reach the bottom-right corner.
-        return minCost[n - 1][n - 1];
+        // Return -1 if no path found, though the problem guarantees a path.
+        return -1;
     }
 };
+
 
 //{ Driver Code Starts.
 int main(){
