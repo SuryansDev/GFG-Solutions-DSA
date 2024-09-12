@@ -45,6 +45,8 @@ class GFG {
 // } Driver Code Ends
 
 
+
+
 /* Node of a linked list
  class Node {
    int data;
@@ -55,18 +57,11 @@ class GFG {
 
 class Solution {
     int getMiddle(Node head) {
-        // Your code here.
-        Node temp = head;
-        int len = 0;
-        while(temp != null){
-            len++;
-            temp = temp.next;
+        Node slow = head , fast = head;
+        while(fast != null && fast.next != null){
+            slow = slow.next;
+            fast = fast.next.next;
         }
-        len = len/2;
-        while(len != 0){
-            head = head.next;
-            len--;
-        }
-        return head.data;
+        return slow.data;
     }
 }
