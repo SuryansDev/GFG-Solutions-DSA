@@ -22,6 +22,8 @@ class DriverClass {
                 System.out.println("1");
             else
                 System.out.println("0");
+
+            System.out.println("~");
         }
     }
 }
@@ -32,26 +34,31 @@ class DriverClass {
 
 class Solution {
     // Function to detect cycle in a directed graph.
-    public void dfs(ArrayList<ArrayList<Integer>> adj, int[] v, int node, boolean[] ans){
-        if(ans[0] == true) return;
-        v[node] = 1;
-        for(int i : adj.get(node)){
-            if(v[i] == 0) dfs(adj, v, i, ans);
-            else if(i == node || v[i] == 1){
-                ans[0] = true;
-                return;
+    public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj) {
+        int[] indeg = new int[adj.size()];
+        for(ArrayList<Integer> i : adj){
+            for(int j : i){
+                indeg[j]++;
             }
         }
-        v[node] = 2;
-    }
-    public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj) {
-        // code here
-        int[] v = new int[V];
-        boolean[] ans = new boolean[]{false};
-        for(int i = 0; i < V; i++){
-            if(v[i] == 0) dfs(adj, v, i, ans);
-            
+        
+        Queue<Integer> que = new ArrayDeque<>();
+        
+        for(int i = 0; i < indeg.length; i++){
+            if(indeg[i] == 0) que.add(i);
         }
-        return ans[0];
+        
+        int count = 0;
+        
+        while(!que.isEmpty()){
+            int temp = que.poll();
+            for(int i : adj.get(temp)){
+                indeg[i]--;
+                if(indeg[i] == 0) que.add(i);
+            }
+            count++;
+        }
+        
+        return count != adj.size();
     }
 }
