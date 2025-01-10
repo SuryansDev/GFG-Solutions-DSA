@@ -38,25 +38,17 @@ class GFG {
 
 class Solution {
     ArrayList<Integer> countDistinct(int arr[], int k) {
-        HashMap<Integer, Integer> map = new HashMap<>();
-        
-        ArrayList<Integer> ans = new ArrayList<>();    
-        for(int i = 0; i < k; i++){
-            int val = map.getOrDefault(arr[i], 0);
-            map.put(arr[i], val + 1);
+        // code here
+        HashSet <Integer> set=new HashSet<>();
+        ArrayList <Integer> list=new ArrayList <>();
+        int i,j;
+        for(i=0;i<arr.length-k+1;i++){
+            for(j=i;j<k+i;j++){
+                set.add(arr[j]);
+            }
+            list.add(set.size());
+            set.clear();
         }
-        
-        ans.add(map.size());
-        for(int i = k; i < arr.length; i++){
-            int val = map.getOrDefault(arr[i], 0);
-            map.put(arr[i], val + 1);
-            
-            val = map.get(arr[i - k]);
-            if(val == 1) map.remove(arr[i - k]);
-            else map.put(arr[i - k], val - 1);
-            
-            ans.add(map.size());
-        }
-        return ans;
+        return list;
     }
 }
