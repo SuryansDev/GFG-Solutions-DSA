@@ -31,19 +31,30 @@ System.out.println("~");
 class Solution {
     // Function to find if there is a celebrity in the party or not.
     public int celebrity(int mat[][]) {
-        boolean[] knows = new boolean[mat.length];
-        int[] known = new int[mat.length];
+        Stack<Integer> stack = new Stack<>();
+        for(int i = 0; i < mat.length; i++) stack.push(i);
         
-        for(int i = 0; i < mat.length; i++){
-            for(int j = 0; j < mat.length; j++){
-                if(mat[i][j] == 1){
-                knows[i] = true;
-                known[j]++;}
+        while(stack.size() > 1){
+            int p1 = stack.pop();
+            int p2 = stack.pop();
+            
+            if(mat[p1][p2] == 0){
+                if(mat[p2][p1] == 1){
+                    stack.push(p1);
+                }
+            }
+            else{
+                if(mat[p2][p1] == 0){
+                    stack.push(p2);
+                }
             }
         }
+        if(stack.isEmpty()) return -1;
+        int potentialCeleb = stack.pop();
+        for(int i = 0; i < mat.length; i++)
+            if(mat[potentialCeleb][i] == 1 || (i != potentialCeleb && mat[i][potentialCeleb] == 0))
+                return -1;
         
-        for(int i = 0; i < known.length; i++) 
-            if(!knows[i] && known[i] == mat.length - 1) return i;
-        return -1;
+        return potentialCeleb;
     }
 }
